@@ -285,7 +285,31 @@ def cardPlay(event):
             greatest = played[turn]
             winner = player
         turn = 0
-        for i in range(len(playedLabel)) : playedLabel[i].destroy()
+        for i in range(len(playedLabel)-1): playedLabel[i].destroy()
+        end = playedLabel[len(playedLabel)-1]
+        endx = end.winfo_x()
+        endy = end.winfo_y()
+        if( winner == 0):
+            while( endy < 800): 
+                endy += 2
+                end.place( x = endx, y=endy)
+                window.update()
+        elif( winner == 1):
+            while( endy > 0): 
+                endy -= 2
+                end.place( x = endx, y=endy)
+                window.update()
+        elif( winner == 2):
+            while( endx > 0): 
+                endx -= 2
+                end.place( x = endx, y=endy)
+                window.update()
+        elif( winner == 3):
+            while( endx < 800): 
+                endx += 2
+                end.place( x = endx, y=endy)
+                window.update()
+        end.destroy()
         playedLabel.clear
         played.clear()
         window.update()
@@ -480,7 +504,31 @@ def cpuplay(cpu,player):
             greatest = played[turn]
             winner = cpu-1
         turn = 0
-        for i in range(len(playedLabel)) : playedLabel[i].destroy()
+        for i in range(len(playedLabel)-1): playedLabel[i].destroy()
+        end = playedLabel[len(playedLabel)-1]
+        endx = end.winfo_x()
+        endy = end.winfo_y()
+        if( winner == 0):
+            while( endy < 800): 
+                endy += 2
+                end.place( x = endx, y=endy)
+                window.update()
+        elif( winner == 1):
+            while( endy > 0): 
+                endy -= 2
+                end.place( x = endx, y=endy)
+                window.update()
+        elif( winner == 2):
+            while( endx > 0): 
+                endx -= 2
+                end.place( x = endx, y=endy)
+                window.update()
+        elif( winner == 3):
+            while( endx < 800): 
+                endx += 2
+                end.place( x = endx, y=endy)
+                window.update()
+        end.destroy()
         playedLabel.clear
         played.clear()
         window.update()
