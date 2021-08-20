@@ -6,7 +6,7 @@ import random
 window = Tk()
 cards = []
 labels = []
-closerFrame = None
+cardBack = None
 inputs = []
 bid = None
 trump = None
@@ -48,10 +48,12 @@ def main():
     window.mainloop()
 
 def createWindow():
+    global cardBack
     Spade = PhotoImage(file = "img/Logo.png")
     Club = PhotoImage(file = "img/Club.png")
     Diamond = PhotoImage(file = "img/Diamond.png")
     Heart = PhotoImage(file = "img/Heart.png")
+    cardBack =PhotoImage(file = "img/back_v.png")
     Images.append(Spade)
     Images.append(Club)
     Images.append(Diamond)
@@ -134,9 +136,6 @@ def sortCards():
     cards = newCards
                 
 def Settings():
-    global closerFrame
-    closerFrame = Frame(window,bg = "black",width= 860,height=190)
-    closerFrame.place(x = 275, y= 20)
     scale = Scale(window,from_=7,to=13,length=220,
               font = ('Consolas',20),
               troughcolor = '#000000',
@@ -181,7 +180,8 @@ def begin():
     elif( radio.get() == 2) : trump = "diamonds"
     elif( radio.get() == 3) : trump = "hearts"
     for i in range(len(inputs)) : inputs[i].destroy()
-    closerFrame.destroy()
+    for i in range(13,26) : labels[i].config(image=cards[i].img)
+    window.update()
     Type = "Beginning"
     global turn
     global score
@@ -563,6 +563,7 @@ def gameOver():
     
 
 def createLabels():
+    global cardBack
     positions.append(275)
     positions.append(598)
     positions.append(275)
@@ -574,7 +575,8 @@ def createLabels():
     for i in range(4):
         if( i == 0 or i == 1):
             for j in range(13):
-                label = Label(window,image =cards[(13*i) + j].img)
+                if(i==0) : label = Label(window,image =cards[(13*i) + j].img)
+                else : label = Label(window,image = cardBack)
                 labels.append(label)
                 if( i == 0) : label.place(x = 275 + 60*j, y= 598)
                 else : label.place(x = 275 + 60*j, y= 20)
