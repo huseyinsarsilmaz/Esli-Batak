@@ -1,18 +1,19 @@
 from tkinter import *
 from tkinter import messagebox
+from Card import *
 import time
 import random
 
 window = Tk()
 cards = []
 labels = []
-cardBack = None
+cardBackV = None
+cardBackH = None
 inputs = []
 bid = None
 trump = None
 radio = IntVar()
 Images = []
-
 positions = []
 played = []
 greatest = None
@@ -25,23 +26,6 @@ cpuScore = None
 scorboard = None
 active = []
 
-
-class Card:
-    value = None
-    type = None
-    img = None
-    back = None
-    unplayable = None
-
-    def __init__(self,value,type,path):
-        self.value = value
-        self.type = type
-        self.img = PhotoImage(file=path)
-        self.back = PhotoImage(file = "img/back.png")
-        upath = "img/unplayable/" + path[4:] + ".png"
-        self.unplayable = PhotoImage(file=upath)
-
-
 def main():
     createWindow()
     createCards()
@@ -52,14 +36,16 @@ def main():
     window.mainloop()
 
 def createWindow():
-    global cardBack
+    global cardBackV
+    global cardBackH
     global active
     for i in range(52) : active.append(FALSE)
     Spade = PhotoImage(file = "img/Logo.png")
     Club = PhotoImage(file = "img/Club.png")
     Diamond = PhotoImage(file = "img/Diamond.png")
     Heart = PhotoImage(file = "img/Heart.png")
-    cardBack =PhotoImage(file = "img/back_v.png")
+    cardBackV =PhotoImage(file = "img/back_v.png")
+    cardBackH =PhotoImage(file = "img/back.png")
     Images.append(Spade)
     Images.append(Club)
     Images.append(Diamond)
@@ -612,7 +598,8 @@ def gameOver():
     
 
 def createLabels():
-    global cardBack
+    global cardBackV
+    global cardBackH
     positions.append(275)
     positions.append(598)
     positions.append(275)
@@ -625,14 +612,14 @@ def createLabels():
         if( i == 0 or i == 1):
             for j in range(13):
                 if(i==0) : label = Label(window,image =cards[(13*i) + j].img,borderwidth=0, highlightthickness=0)
-                else : label = Label(window,image = cardBack,borderwidth=0, highlightthickness=0)
+                else : label = Label(window,image = cardBackV,borderwidth=0, highlightthickness=0)
                 labels.append(label)
                 if( i == 0) : label.place(x = 275 + 60*j, y= 598)
                 else : label.place(x = 275 + 60*j, y= 20)
                 
         elif( i == 2 or i == 3):
             for j in range(13):
-                label = Label(window,image =cards[(13*i) + j].back,borderwidth=0, highlightthickness=0)
+                label = Label(window,image = cardBackH,borderwidth=0, highlightthickness=0)
                 labels.append(label)
                 if( i == 2) : label.place(x = 40, y= 89 + 40*j)
                 else : label.place(x = 1160, y= 89 + 40*j)
