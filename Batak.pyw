@@ -23,6 +23,7 @@ winner = None
 score = None
 cpuScore = None
 scorboard = None
+active = []
 
 
 class Card:
@@ -30,12 +31,15 @@ class Card:
     type = None
     img = None
     back = None
+    unplayable = None
 
     def __init__(self,value,type,path):
         self.value = value
         self.type = type
         self.img = PhotoImage(file=path)
         self.back = PhotoImage(file = "img/back.png")
+        upath = "img/unplayable/" + path[4:] + ".png"
+        self.unplayable = PhotoImage(file=upath)
 
 
 def main():
@@ -49,6 +53,8 @@ def main():
 
 def createWindow():
     global cardBack
+    global active
+    for i in range(52) : active.append(FALSE)
     Spade = PhotoImage(file = "img/Logo.png")
     Club = PhotoImage(file = "img/Club.png")
     Diamond = PhotoImage(file = "img/Diamond.png")
@@ -212,6 +218,7 @@ def cardDeselect(event):
     label.place(x = label.winfo_x(),y = label.winfo_y() + 20)
 
 def cardPlay(event):
+    global labels
     label = event.widget
     index = labels.index(label)
     player = int(index/13)
@@ -221,6 +228,9 @@ def cardPlay(event):
              labels[i].unbind("<Leave>")
              labels[i].unbind("<Button-1>")
     animate = Label(window, image= cards[index].img)
+    for i in range(26):
+        if( labels[i] != None):
+            labels[i].config(image=cards[i].img)
     if( index < 13) : cpu = 4
     else : cpu = 3
     xpos = label.winfo_x()
@@ -250,6 +260,7 @@ def cardPlay(event):
     global score
     global cpuScore
     global greatest
+    global active
     if( turn == 0):
         Type = played[0].type
         winner = player
@@ -257,6 +268,7 @@ def cardPlay(event):
         if( player == 0) : player = 1
         else : player = 0
         greatest = played[0]
+        for i in range( player*13,(player+1)*13) : active[i] = FALSE
         cpuplay(cpu,player)
     elif( turn < 3):
         if ( played[turn].type == trump): 
@@ -272,6 +284,7 @@ def cardPlay(event):
         turn += 1
         if( player == 0) : player = 1
         else : player = 0
+        for i in range( player*13,(player+1)*13) : active[i] = FALSE
         cpuplay(cpu,player)
     else: 
         if ( played[turn].type == trump): 
@@ -332,8 +345,12 @@ def cardPlay(event):
             else : player = 0
             message = "Tricks: " + str(score)
             scorboard.config(text = str(message))
-            if ( winner == 2) : cpuplay(winner+1,0)
-            else : cpuplay(winner+1,1)
+            if ( winner == 2) : 
+                for i in range( (0)*13,(0+1)*13) : active[i] = FALSE
+                cpuplay(winner+1,0)
+            else : 
+                for i in range( (1)*13,(1+1)*13) : active[i] = FALSE
+                cpuplay(winner+1,1)
             
     
 
@@ -341,6 +358,8 @@ def cpuplay(cpu,player):
     index = -1
     value = 0
     global Type
+    global active
+    global labels
     for i in range((cpu-1)*13,cpu*13):
         if( labels[i] != None):
             if (cards[i].type == Type):
@@ -392,6 +411,7 @@ def cpuplay(cpu,player):
                         labels[i].bind("<Enter>",cardSelect)
                         labels[i].bind("<Leave>",cardDeselect)
                         labels[i].bind("<Button-1>",cardPlay)
+                        active[i] = TRUE
                         marked +=1
         if( marked == 0):
             for i in range( player*13,(player+1)*13):
@@ -400,6 +420,7 @@ def cpuplay(cpu,player):
                             labels[i].bind("<Enter>",cardSelect)
                             labels[i].bind("<Leave>",cardDeselect)
                             labels[i].bind("<Button-1>",cardPlay)
+                            active[i] = TRUE
                             marked +=1
         if( marked == 0):
             hastrump = FALSE
@@ -414,25 +435,36 @@ def cpuplay(cpu,player):
                         labels[i].bind("<Enter>",cardSelect)
                         labels[i].bind("<Leave>",cardDeselect)
                         labels[i].bind("<Button-1>",cardPlay)
+                        active[i] = TRUE
             elif(Type == trump and hastrump == FALSE):
                 for i in range( player*13,(player+1)*13):
                     if( labels[i] != None):
                         labels[i].bind("<Enter>",cardSelect)
                         labels[i].bind("<Leave>",cardDeselect)
                         labels[i].bind("<Button-1>",cardPlay)
+                        active[i] = TRUE
             elif(Type != trump and hastrump == TRUE):
                 for i in range( player*13,(player+1)*13):
                     if( labels[i] != None and cards[i].type == trump):
                         labels[i].bind("<Enter>",cardSelect)
                         labels[i].bind("<Leave>",cardDeselect)
                         labels[i].bind("<Button-1>",cardPlay)
+                        active[i] = TRUE
             elif(Type != trump and hastrump == FALSE):
                 for i in range( player*13,(player+1)*13):
                     if( labels[i] != None):
                         labels[i].bind("<Enter>",cardSelect)
                         labels[i].bind("<Leave>",cardDeselect)
                         labels[i].bind("<Button-1>",cardPlay)
+                        active[i] = TRUE
         turn += 1
+        for i in range( player*13,(player+1)*13):
+            if( labels[i] != None):
+                if( active[i] == TRUE): labels[i].config(image=cards[i].img)
+                else : 
+                    print("burdayim")
+                    labels[i].config(image=cards[i].unplayable)
+        window.update()
     elif( turn < 3):
         if ( played[turn].type == trump): 
             Type = str(trump)
@@ -451,6 +483,7 @@ def cpuplay(cpu,player):
                         labels[i].bind("<Enter>",cardSelect)
                         labels[i].bind("<Leave>",cardDeselect)
                         labels[i].bind("<Button-1>",cardPlay)
+                        active[i] = TRUE
                         marked +=1
         if( marked == 0):
             for i in range( player*13,(player+1)*13):
@@ -459,6 +492,7 @@ def cpuplay(cpu,player):
                             labels[i].bind("<Enter>",cardSelect)
                             labels[i].bind("<Leave>",cardDeselect)
                             labels[i].bind("<Button-1>",cardPlay)
+                            active[i] = TRUE
                             marked +=1
         if( marked == 0):
             hastrump = FALSE
@@ -473,25 +507,36 @@ def cpuplay(cpu,player):
                         labels[i].bind("<Enter>",cardSelect)
                         labels[i].bind("<Leave>",cardDeselect)
                         labels[i].bind("<Button-1>",cardPlay)
+                        active[i] = TRUE
             elif(Type == trump and hastrump == FALSE):
                 for i in range( player*13,(player+1)*13):
                     if( labels[i] != None):
                         labels[i].bind("<Enter>",cardSelect)
                         labels[i].bind("<Leave>",cardDeselect)
                         labels[i].bind("<Button-1>",cardPlay)
+                        active[i] = TRUE
             elif(Type != trump and hastrump == TRUE):
                 for i in range( player*13,(player+1)*13):
                     if( labels[i] != None and cards[i].type == trump):
                         labels[i].bind("<Enter>",cardSelect)
                         labels[i].bind("<Leave>",cardDeselect)
                         labels[i].bind("<Button-1>",cardPlay)
+                        active[i] = TRUE
             elif(Type != trump and hastrump == FALSE):
                 for i in range( player*13,(player+1)*13):
                     if( labels[i] != None):
                         labels[i].bind("<Enter>",cardSelect)
                         labels[i].bind("<Leave>",cardDeselect)
                         labels[i].bind("<Button-1>",cardPlay)
+                        active[i] = TRUE
         turn += 1
+        for i in range( player*13,(player+1)*13):
+            if( labels[i] != None):
+                if( active[i] == TRUE): labels[i].config(image=cards[i].img)
+                else : 
+                    print("burdayim")
+                    labels[i].config(image=cards[i].unplayable)       
+        window.update()
     else:
         if ( played[turn].type == trump): 
             Type = str(trump)
@@ -549,8 +594,12 @@ def cpuplay(cpu,player):
             if( (score + cpuScore) == 13) : gameOver()
             message = "Tricks: " + str(score)
             scorboard.config(text = str(message))
-            if ( winner == 2) : cpuplay(winner+1,0)
-            else : cpuplay(winner+1,1)
+            if ( winner == 2) : 
+                for i in range( (0)*13,(0+1)*13) : active[i] = FALSE
+                cpuplay(winner+1,0)
+            else : 
+                for i in range( (1)*13,(1+1)*13) : active[i] = FALSE
+                cpuplay(winner+1,1)
         
 
 
@@ -575,15 +624,15 @@ def createLabels():
     for i in range(4):
         if( i == 0 or i == 1):
             for j in range(13):
-                if(i==0) : label = Label(window,image =cards[(13*i) + j].img)
-                else : label = Label(window,image = cardBack)
+                if(i==0) : label = Label(window,image =cards[(13*i) + j].img,borderwidth=0, highlightthickness=0)
+                else : label = Label(window,image = cardBack,borderwidth=0, highlightthickness=0)
                 labels.append(label)
                 if( i == 0) : label.place(x = 275 + 60*j, y= 598)
                 else : label.place(x = 275 + 60*j, y= 20)
                 
         elif( i == 2 or i == 3):
             for j in range(13):
-                label = Label(window,image =cards[(13*i) + j].back)
+                label = Label(window,image =cards[(13*i) + j].back,borderwidth=0, highlightthickness=0)
                 labels.append(label)
                 if( i == 2) : label.place(x = 40, y= 89 + 40*j)
                 else : label.place(x = 1160, y= 89 + 40*j)
