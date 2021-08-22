@@ -33,7 +33,6 @@ def main():
     sortCards()
     createLabels()
     Settings()
-    
     window.mainloop()
 
 def loadImages():
@@ -41,8 +40,7 @@ def loadImages():
     global cardBackH
     global activeCards
     for i in range(52) : activeCards.append(FALSE)
-    cardBackV =PhotoImage(file = "img/back_v.png")
-    cardBackH =PhotoImage(file = "img/back.png")
+    cardBackV =PhotoImage(file = "img/back_v.png") ; cardBackH =PhotoImage(file = "img/back.png")
     Suits = [PhotoImage(file = "img/Logo.png"),PhotoImage(file = "img/Club.png"),PhotoImage(file = "img/Diamond.png"),
              PhotoImage(file = "img/Heart.png")]
     for i in range(4) : images.append(Suits[i])
@@ -63,35 +61,26 @@ def createCards():
             if(j<11): path += str(j)
             else : path += Values[j-11]
             path += "_of_" + types[i] + ".png"
-            card = Card(j,types[i],path)
-            cards.append(card)
+            cards.append(Card(j,types[i],path))
     random.shuffle(cards)
     
 def sortCards():
     global cards
     newCards = []
     types = ["spades","hearts","diamonds","clubs"]
-    spades = [];hearts = [];diamonds = [];clubs = []    
+    spades = [] ; hearts = [] ; diamonds = [] ; clubs = []    
     suits = [spades,hearts,diamonds,clubs]
     for i in range(4):
         for j in range(13):
             card = cards[ (13*i) + j ]
             for k in range(4) : 
                 if(card.type == types[k]) :suits[k].append(card)
-        for j in range (4) : suitSorter(suits[j])
+        for j in range (4) : suits[j].sort(key= lambda item : item.value)
         for j in range(4):
             for k in range(len(suits[j])):
                 newCards.append(suits[j][k])
         for j in range(4) : suits[j].clear()
     cards = newCards
-
-def suitSorter(suit):
-    for j in range(len(suit)-1):
-            for k in range(len(suit)-1):
-                if( suit[k].value > suit[k+1].value) :
-                    temp = suit[k+1]
-                    suit[k+1] = suit[k]
-                    suit[k] = temp
                 
 def Settings():
     global inputs
@@ -120,7 +109,7 @@ def begin():
     inputs.clear()
     window.update()
     turnType = "Beginning"
-    turn = 0;humanScore = 0;cpuScore = 0
+    turn = 0 ; humanScore = 0 ; cpuScore = 0
     scoreBoard = Label(window,text= "Tricks: " + str(humanScore),font=('Arial',30),fg='#FFFFFF',bg='#096b1b')
     scoreBoard.place(x = 1150 , y = 20)
     for i in range(13):
@@ -231,8 +220,8 @@ def cardAnimation(label,index,player,isHuman):
         for i in range(26):
             if( labels[i] != None):
                 labels[i].config(image=cards[i].img)
-    xpos = label.winfo_x();ypos = label.winfo_y()
-    xstep = (625 - label.winfo_x())/100;ystep = (270 - label.winfo_y())/100
+    xpos = label.winfo_x() ; ypos = label.winfo_y()
+    xstep = (625 - label.winfo_x())/100 ; ystep = (270 - label.winfo_y())/100
     animate.place(x = xpos,y = ypos)
     label.destroy()
     labels[index] = None
@@ -240,7 +229,7 @@ def cardAnimation(label,index,player,isHuman):
     playedLabels.append(animate)
     for i in range(100):
         animate.place(x = xpos + xstep,y= ypos + ystep)
-        xpos += xstep;ypos +=ystep
+        xpos += xstep ; ypos +=ystep
         window.update()
     counter = 0
     positions[2*player] = positions[2*player] + 30
@@ -288,7 +277,7 @@ def cpuplay(cpu,player):
         else: cpuWin()
         
 def cpuTurn(cpu):
-    index = -1;value = 0
+    index = -1 ; value = 0
     for i in range((cpu-1)*13,cpu*13):
         if( labels[i] != None):
             if (cards[i].type == turnType):
