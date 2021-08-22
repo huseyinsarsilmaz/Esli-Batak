@@ -6,7 +6,7 @@ import random
 
 class Batak:
 
-    def __init__(self):
+    def __init__(self,language):
         self.window = Tk()
         self.cards = []
         self.labels = []
@@ -28,6 +28,8 @@ class Batak:
         self.cpuScore = None
         self.scoreBoard = None
         self.activeCards = []    
+        self.language = language
+        self.texts = [ ["Your bid ?","Trump ?"] , ["  İhale ?","  Koz ?"]]
         self.loadImages()
         self.createWindow()
         self.createCards()
@@ -82,8 +84,8 @@ class Batak:
     def Settings(self):
         self.inputs.append(Scale(self.window,from_=7,to=13,length=220,font = ('Consolas',20),troughcolor = '#000000',fg = '#FFFFFF',
                     bg = '#096b1b',borderwidth=0,highlightthickness=0))
-        self.inputs.append(Label(self.window,text="Your bid ?",font=('Arial',45),fg='#FFFFFF',bg='#096b1b',))
-        self.inputs.append(Label(self.window,text="Trump ?",font=('Arial',45),fg='#FFFFFF',bg='#096b1b',))
+        self.inputs.append(Label(self.window,text=self.texts[self.language][0],font=('Arial',45),fg='#FFFFFF',bg='#096b1b',))
+        self.inputs.append(Label(self.window,text=self.texts[self.language][1],font=('Arial',45),fg='#FFFFFF',bg='#096b1b',))
         coordinates = [[425,325],[350,225],[775,225],[810,400],[885,400],[810,325],[885,325]]
         for i in range(4): self.inputs.append( Radiobutton(self.window,variable=self.radio,value=i,image = self.images[i],
                         indicatoron=0,command=self.begin)) 
