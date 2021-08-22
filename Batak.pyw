@@ -197,7 +197,7 @@ class Batak:
         self.window.update()
 
     def cardAnimation(self,label,index,player,isHuman):
-        animate = Label(self.window, image= self.cards[index].img)
+        animate = Label(self.window, image= self.cards[index].img,borderwidth=0,highlightthickness=0)
         if(isHuman == TRUE):
             for i in range(26):
                 if( self.labels[i] != None):
