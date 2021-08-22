@@ -354,9 +354,3 @@ class Batak:
                     self.labels.append(label)
                     if( i == 2) : label.place(x = 40, y= 89 + 40*j)
                     else : label.place(x = 1160, y= 89 + 40*j)
-
-def main():
-    batak = Batak()
-
-if __name__ == "__main__":
-    main()
