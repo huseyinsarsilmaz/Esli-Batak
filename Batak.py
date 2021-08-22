@@ -45,7 +45,7 @@ class Batak:
 
     def createWindow(self):
         self.window.geometry("1400x800")
-        self.window.title("Batak")
+        self.window.title("Eşli Batak")
         self.window.iconphoto(True,PhotoImage(file="img/Logo.png"))
         self.window.config(background="#096b1b")
         self.window.resizable(height=False,width=False)
