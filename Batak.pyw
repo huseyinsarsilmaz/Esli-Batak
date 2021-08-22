@@ -151,16 +151,16 @@ class Batak:
 
     def winnerCheck(self,player):
         if ( self.playedCards[self.turn].type == self.trump): 
-            turnType = str(self.trump)
+            self.turnType = str(self.trump)
             isGreatest = TRUE
-            if( self.playedCards[self.turn].type != turnType) : isGreatest = FALSE
+            if( self.playedCards[self.turn].type != self.turnType) : isGreatest = FALSE
             else:
                 for i in range(len(self.playedCards)):
-                    if(self.playedCards[i].type == turnType and 
+                    if(self.playedCards[i].type == self.turnType and 
                     self.playedCards[i].value > self.playedCards[self.turn].value) : isGreatest = FALSE
             if ( isGreatest == TRUE): 
-                greatest = self.playedCards[self.turn]
-                winner = player
+                self.greatest = self.playedCards[self.turn]
+                self.winner = player
 
     def firstTurnInitialize(self,player):
         self.turnType = self.playedCards[0].type
