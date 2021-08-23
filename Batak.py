@@ -23,6 +23,7 @@ class Batak:
         self.playedLabels = []
         self.turn = None
         self.turnType = None
+        self.oldType = None
         self.winner = None
         self.humanScore = None
         self.cpuScore = None
@@ -66,9 +67,9 @@ class Batak:
         
     def sortCards(self):
         newCards = []
-        types = ["spades","hearts","diamonds","clubs"]
+        types = ["diamonds","spades","hearts","clubs"]
         spades = [] ; hearts = [] ; diamonds = [] ; clubs = []    
-        suits = [spades,hearts,diamonds,clubs]
+        suits = [diamonds,spades,hearts,clubs]
         for i in range(4):
             for j in range(13):
                 card = self.cards[ (13*i) + j ]
@@ -106,13 +107,13 @@ class Batak:
         for i in range(13):
             self.labels[i].bind("<Enter>",self.cardSelect)
             self.labels[i].bind("<Leave>",self.cardDeselect)
-            self.labels[i].bind("<Button-1>",self.cardPlay)
+            self.labels[i].bind("<Button-1>",self.humanPlay)
         
     def cardSelect(self,event): event.widget.place(x = event.widget.winfo_x(),y = event.widget.winfo_y() - 20)
 
     def cardDeselect(self,event):event.widget.place(x = event.widget.winfo_x(),y = event.widget.winfo_y() + 20)
 
-    def cardPlay(self,event):
+    def humanPlay(self,event):
         label = event.widget
         index = self.labels.index(label)
         player = int(index/13)
@@ -152,20 +153,22 @@ class Batak:
         else : return 0
 
     def winnerCheck(self,player):
-        if ( self.playedCards[self.turn].type == self.trump): 
+        if ( self.oldType == None and self.playedCards[self.turn].type == self.trump): 
+            self.oldType = self.turnType
             self.turnType = str(self.trump)
-            isGreatest = TRUE
-            if( self.playedCards[self.turn].type != self.turnType) : isGreatest = FALSE
-            else:
-                for i in range(len(self.playedCards)):
-                    if(self.playedCards[i].type == self.turnType and 
-                    self.playedCards[i].value > self.playedCards[self.turn].value) : isGreatest = FALSE
-            if ( isGreatest == TRUE): 
-                self.greatest = self.playedCards[self.turn]
-                self.winner = player
+        isGreatest = TRUE
+        if( self.playedCards[self.turn].type != self.turnType) : isGreatest = FALSE
+        else:
+            for i in range(len(self.playedCards)):
+                if(self.playedCards[i].type == self.turnType and 
+                self.playedCards[i].value > self.playedCards[self.turn].value) : isGreatest = FALSE
+        if ( isGreatest == TRUE): 
+            self.greatest = self.playedCards[self.turn]
+            self.winner = player
 
     def firstTurnInitialize(self,player):
         self.turnType = self.playedCards[0].type
+        self.oldType = None
         self.winner = player
         self.greatest = self.playedCards[0]
 
@@ -247,18 +250,39 @@ class Batak:
             
     def cpuTurn(self,cpu):
         index = -1 ; value = 0
-        for i in range((cpu-1)*13,cpu*13):
-            if( self.labels[i] != None):
-                if (self.cards[i].type == self.turnType):
-                    if(self.cards[i].value > value):
-                        index = i
-                        value = self.cards[i].value
-        if( index == -1):
+        if( self.oldType == None):
             for i in range((cpu-1)*13,cpu*13):
                 if( self.labels[i] != None):
-                    if(self.cards[i].value > value):
-                        index = i
-                        value = self.cards[i].value
+                    if (self.cards[i].type == self.turnType):
+                        if(self.cards[i].value > value):
+                            index = i
+                            value = self.cards[i].value
+            if( index == -1):
+                for i in range((cpu-1)*13,cpu*13):
+                    if( self.labels[i] != None):
+                        if(self.cards[i].value > value):
+                            index = i
+                            value = self.cards[i].value
+        else:
+            for i in range((cpu-1)*13,cpu*13):
+                if( self.labels[i] != None):
+                    if (self.cards[i].type == self.oldType):
+                        if(self.cards[i].value > value):
+                            index = i
+                            value = self.cards[i].value
+            if( index == -1):
+                for i in range((cpu-1)*13,cpu*13):
+                    if( self.labels[i] != None):
+                        if (self.cards[i].type == self.turnType):
+                            if(self.cards[i].value > value):
+                                index = i
+                                value = self.cards[i].value
+            if( index == -1):
+                for i in range((cpu-1)*13,cpu*13):
+                    if( self.labels[i] != None):
+                        if(self.cards[i].value > value):
+                            index = i
+                            value = self.cards[i].value 
         return index
 
     def humanTurn(self,turn,player):
@@ -275,7 +299,7 @@ class Batak:
                 if( self.labels[i] != None):
                     self.labels[i].bind("<Enter>",self.cardSelect)
                     self.labels[i].bind("<Leave>",self.cardDeselect)
-                    self.labels[i].bind("<Button-1>",self.cardPlay)
+                    self.labels[i].bind("<Button-1>",self.humanPlay)
         
     def cpuWin(self):
         time.sleep(0.5)
@@ -297,39 +321,54 @@ class Batak:
     def bind(self,label,i,marked):
         label.bind("<Enter>",self.cardSelect)
         label.bind("<Leave>",self.cardDeselect)
-        label.bind("<Button-1>",self.cardPlay)
+        label.bind("<Button-1>",self.humanPlay)
         self.activeCards[i] = TRUE
         return marked +1
 
     def playableHumanCards(self,player):
         marked = 0
-        for i in range( player*13,(player+1)*13):
-            if( self.labels[i] != None):
-                    if(self.cards[i].type == self.turnType and 
-                    self.cards[i].value > self.greatest.value): marked = self.bind(self.labels[i],i,marked)
+        if( self.oldType == None):
+            for i in range( player*13,(player+1)*13):
+                if( self.labels[i] != None):
+                        if(self.cards[i].type == self.turnType and 
+                        self.cards[i].value > self.greatest.value): marked = self.bind(self.labels[i],i,marked)
             if( marked == 0):
                 for i in range( player*13,(player+1)*13):
                     if( self.labels[i] != None):
-                            if(self.cards[i].type == self.turnType): marked = self.bind(self.labels[i],i,marked)
-            if( marked == 0):
-                hastrump = FALSE
+                        if(self.cards[i].type == self.turnType): marked = self.bind(self.labels[i],i,marked)
+        if( marked == 0):
+            hastrump = FALSE
+            for i in range( player*13,(player+1)*13):
+                if( self.labels[i] != None):
+                    if( self.cards[i].type == self.trump):
+                        hastrump = TRUE
+                        break
+            hasOldType = FALSE
+            if( self.oldType != None):
                 for i in range( player*13,(player+1)*13):
                     if( self.labels[i] != None):
-                        if( self.cards[i].type == self.trump):
-                            hastrump = TRUE
+                        if( self.cards[i].type == self.oldType):
+                            hasOldType = TRUE
                             break
-                if( self.turnType == self.trump and hastrump == TRUE):
+            if ( self.oldType != None and hasOldType == TRUE):
+                for i in range( player*13,(player+1)*13):
+                    if( self.labels[i] != None and self.cards[i].type == self.oldType): self.bind(self.labels[i],i,marked)
+            elif ( (self.oldType != None and hasOldType == FALSE) and hastrump == TRUE):
+                for i in range( player*13,(player+1)*13):
+                        if( (self.labels[i] != None and self.cards[i].type == self.trump) and
+                             self.cards[i].value > self.greatest.value): self.bind(self.labels[i],i,marked)
+                if( marked == 0):
                     for i in range( player*13,(player+1)*13):
                         if( self.labels[i] != None and self.cards[i].type == self.trump): self.bind(self.labels[i],i,marked)
-                elif(self.turnType == self.trump and hastrump == FALSE):
-                    for i in range( player*13,(player+1)*13):
-                        if( self.labels[i] != None): self.bind(self.labels[i],i,marked)
-                elif(self.turnType != self.trump and hastrump == TRUE):
-                    for i in range( player*13,(player+1)*13):
-                        if( self.labels[i] != None and self.cards[i].type == self.trump): self.bind(self.labels[i],i,marked)
-                elif(self.turnType != self.trump and hastrump == FALSE):
-                    for i in range( player*13,(player+1)*13):
-                        if( self.labels[i] != None): self.bind(self.labels[i],i,marked)
+            elif ( (self.oldType != None and hasOldType == FALSE) and hastrump == FALSE):
+                for i in range( player*13,(player+1)*13):
+                    if( self.labels[i] != None): self.bind(self.labels[i],i,marked)
+            elif(self.oldType == None and hastrump == TRUE):
+                for i in range( player*13,(player+1)*13):
+                    if( self.labels[i] != None and self.cards[i].type == self.trump): self.bind(self.labels[i],i,marked)
+            elif(self.oldType == None and hastrump == FALSE):
+                for i in range( player*13,(player+1)*13):
+                    if( self.labels[i] != None): self.bind(self.labels[i],i,marked)
         for i in range( player*13,(player+1)*13):
                 if( self.labels[i] != None):
                     if( self.activeCards[i] == TRUE): self.labels[i].config(image=self.cards[i].img)
