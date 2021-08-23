@@ -12,6 +12,7 @@ class Batak:
         self.labels = []
         self.cardBackV = None
         self.cardBackH = None
+        self.score = None
         self.inputs = []
         self.bid = None
         self.trump = None
@@ -27,10 +28,9 @@ class Batak:
         self.winner = None
         self.humanScore = None
         self.cpuScore = None
-        self.scoreBoard = None
         self.activeCards = []    
         self.language = language
-        self.texts = [ ["Your bid ?","Trump ?"] , ["  İhale ?","  Koz ?"]]
+        self.texts = [ ["Your bid ?","Trump ?","Player","Computer"] , ["  İhale ?","  Koz ?","Oyuncu","Bilgisayar"]]
         self.loadImages()
         self.createWindow()
         self.createCards()
@@ -42,6 +42,7 @@ class Batak:
     def loadImages(self):
         for i in range(52) : self.activeCards.append(FALSE)
         self.cardBackV =PhotoImage(file = "img/back_v.png") ; self.cardBackH =PhotoImage(file = "img/back.png")
+        self.score = PhotoImage(file = "img/score.png")
         Suits = [PhotoImage(file = "img/Logo.png"),PhotoImage(file = "img/Club.png"),PhotoImage(file = "img/Diamond.png"),
                 PhotoImage(file = "img/Heart.png")]
         for i in range(4) : self.images.append(Suits[i])
@@ -99,11 +100,15 @@ class Batak:
             if( self.radio.get() == i) : self.trump = types[i]
         for i in range(len(self.inputs)) : self.inputs[i].destroy()
         for i in range(13,26) : self.labels[i].config(image=self.cards[i].img)
+        humanText = Label(self.window,text= self.texts[self.language][2],
+                          font=('Arial',30),fg='#FFFFFF',bg='#096b1b',height=1,width=8)
+        humanText.place(x = 40,y=20)
+        cpuText = Label(self.window,text= self.texts[self.language][3],
+                          font=('Arial',30),fg='#FFFFFF',bg='#096b1b',height=1,width=10)
+        cpuText.place(x = 1140,y=20)
         self.inputs.clear()
         self.turnType = "Beginning"
         self.turn = 0 ; self.humanScore = 0 ; self.cpuScore = 0
-        self.scoreBoard = Label(self.window,text= "Tricks: " + str(self.humanScore),font=('Arial',30),fg='#FFFFFF',bg='#096b1b')
-        self.scoreBoard.place(x = 1150 , y = 20)
         for i in range(13):
             self.labels[i].bind("<Enter>",self.cardSelect)
             self.labels[i].bind("<Leave>",self.cardDeselect)
@@ -201,6 +206,20 @@ class Batak:
         self.playedCards.clear()
         self.window.update()
 
+    def scoreDisplay(self,isHuman,score):
+        xpos = 0 ; ypos=0
+        if( isHuman == TRUE) : xpos = 125 ; ypos=70
+        else : xpos = 1245 ; ypos=70
+        if ( score == 12) : score = 2
+        if( score % 5 == 0) : ypos = ypos + (35 * int(score/5))
+        elif (score %4 == 0): xpos = xpos - 70 ; ypos = ypos + (35 * int(score/5))
+        elif (score %2 == 0) : xpos = xpos - 35 ; ypos = ypos + (35 * int(score/5))
+        elif (score %3 == 0) : xpos = xpos + 70 ; ypos = ypos + (35 * int(score/5))
+        else : xpos = xpos + 35 ; ypos = ypos + (35 * int(score/5))
+        scoreLogo = Label(self.window,image=self.score,borderwidth=0,highlightthickness=0)
+        scoreLogo.place( x = xpos , y = ypos)
+        print(str(xpos) + " " + str(ypos))
+
     def cardAnimation(self,label,index,player,isHuman):
         animate = Label(self.window, image= self.cards[index].img,borderwidth=0,highlightthickness=0)
         if(isHuman == TRUE):
@@ -292,9 +311,9 @@ class Batak:
     def humanWin(self,winner):
         player = winner
         self.humanScore +=1
+        self.scoreDisplay(TRUE,self.humanScore-1)
         if( (self.humanScore + self.cpuScore) == 13) : self.gameOver()
         else: 
-            self.scoreBoard.config(text = "Tricks: " + str(self.humanScore))
             for i in range( player*13,(player+1)*13):
                 if( self.labels[i] != None):
                     self.labels[i].bind("<Enter>",self.cardSelect)
@@ -304,8 +323,8 @@ class Batak:
     def cpuWin(self):
         time.sleep(0.5)
         self.cpuScore += 1
+        self.scoreDisplay(FALSE,self.cpuScore-1)
         if( (self.humanScore + self.cpuScore) == 13) : self.gameOver()
-        self.scoreBoard.config(text = "Tricks: " + str(self.humanScore))
         if ( self.winner == 2) : 
             for i in range( (0)*13,(0+1)*13) : self.activeCards[i] = FALSE
             self.cpuplay(self.winner+1,0)
