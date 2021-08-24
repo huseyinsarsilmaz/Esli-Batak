@@ -6,15 +6,15 @@ import random
 
 class Batak:
 
-    def __init__(self,language):
+    def __init__(self,language,mateRule,starter):
         self.window = Tk()
+        self.mateRule = mateRule 
         self.cards = []
         self.labels = []
         self.cardBackV = None
         self.cardBackH = None
         self.score = None
         self.inputs = []
-        self.bid = None
         self.trump = None
         self.radio = IntVar()
         self.images = []
@@ -28,6 +28,12 @@ class Batak:
         self.winner = None
         self.humanScore = None
         self.cpuScore = None
+        self.starter = starter
+        self.bidder = starter
+        self.bidwinner = 0
+        self.bid = 7
+        self.bidTurn = 0
+        self.cpuTrump = ""
         self.activeCards = []    
         self.language = language
         self.texts = [ ["Your bid ?","Trump ?","Player","Computer"] , ["  İhale ?","  Koz ?","Oyuncu","Bilgisayar"]]
@@ -36,7 +42,7 @@ class Batak:
         self.createCards()
         self.sortCards()
         self.createLabels()
-        self.Settings()
+        self.biddingStage()
         self.window.mainloop()
 
     def loadImages(self):
@@ -82,37 +88,126 @@ class Batak:
                     newCards.append(suits[j][k])
             for j in range(4) : suits[j].clear()
         self.cards = newCards
-                    
-    def Settings(self):
-        self.inputs.append(Scale(self.window,from_=7,to=13,length=220,font = ('Consolas',20),troughcolor = '#000000',fg = '#FFFFFF',
-                    bg = '#096b1b',borderwidth=0,highlightthickness=0))
+    
+    def biddingStage(self):
+        if ( self.bidTurn != 4):
+            if( self.bidder == 0):
+                first = FALSE
+                if( self.bidder == self.starter) : first = TRUE
+                self.Settings(first)
+            elif( self.bidder == 1):
+                if( self.mateRule == TRUE) : self.cpuBid(self.bidder)
+                else: self.passTurn()
+            else : self.cpuBid(self.bidder)
+        else:
+            for i in range(13,26) : self.labels[i].config(image=self.cards[i].img)
+            humanText = Label(self.window,text= self.texts[self.language][2],
+                              font=('Arial',30),fg='#FFFFFF',bg='#096b1b',height=1,width=8)
+            humanText.place(x = 40,y=20)
+            cpuText = Label(self.window,text= self.texts[self.language][3],
+                            font=('Arial',30),fg='#FFFFFF',bg='#096b1b',height=1,width=10)
+            cpuText.place(x = 1140,y=20)
+            self.turnType = "Beginning"
+            self.turn = 0 ; self.humanScore = 0 ; self.cpuScore = 0
+            if( self.bidwinner == 0):
+                for i in range(13):
+                    self.labels[i].bind("<Enter>",self.cardSelect)
+                    self.labels[i].bind("<Leave>",self.cardDeselect)
+                    self.labels[i].bind("<Button-1>",self.humanPlay)
+            elif( self.bidwinner == 1):
+                for i in range(13,26):
+                    self.labels[i].bind("<Enter>",self.cardSelect)
+                    self.labels[i].bind("<Leave>",self.cardDeselect)
+                    self.labels[i].bind("<Button-1>",self.humanPlay)
+            elif( self.bidwinner == 2): 
+                self.trump = self.cpuTrump
+                self.cpuplay(3,0)
+            else: 
+                self.trump = self.cpuTrump
+                self.cpuplay(4,1)
+
+    def Settings(self,isFirst):
+        self.inputs.append(Scale(self.window,from_=self.bid,to=13,length=220,font = ('Consolas',20),troughcolor = '#000000',
+                           fg = '#FFFFFF', bg = '#096b1b',borderwidth=0,highlightthickness=0))
         self.inputs.append(Label(self.window,text=self.texts[self.language][0],font=('Arial',45),fg='#FFFFFF',bg='#096b1b',))
         self.inputs.append(Label(self.window,text=self.texts[self.language][1],font=('Arial',45),fg='#FFFFFF',bg='#096b1b',))
         coordinates = [[425,325],[350,225],[775,225],[810,400],[885,400],[810,325],[885,325]]
         for i in range(4): self.inputs.append( Radiobutton(self.window,variable=self.radio,value=i,image = self.images[i],
-                        indicatoron=0,command=self.begin)) 
+                        indicatoron=0,command=self.humanBid))
+        if(isFirst == FALSE):
+            self.inputs.append(Button(self.window,text="PASS",command=self.passTurn,font=("Comic Sans",30),fg="#FFFFFF",bg="black"))
+            coordinates.append([575,325])
         for i in range(len(coordinates)) : self.inputs[i].place(x = coordinates[i][0],y=coordinates[i][1])
-        
-    def begin(self):
-        self.bid = self.inputs[0].get()
+    
+    def humanBid(self):
         types = ["spades","clubs","diamonds","hearts"]
         for i in range(4):
             if( self.radio.get() == i) : self.trump = types[i]
+        self.bid = self.inputs[0].get()
+        self.bidwinner = 0
+        self.bidder = 3
+        self.bidTurn = self.bidTurn +1
         for i in range(len(self.inputs)) : self.inputs[i].destroy()
-        for i in range(13,26) : self.labels[i].config(image=self.cards[i].img)
-        humanText = Label(self.window,text= self.texts[self.language][2],
-                          font=('Arial',30),fg='#FFFFFF',bg='#096b1b',height=1,width=8)
-        humanText.place(x = 40,y=20)
-        cpuText = Label(self.window,text= self.texts[self.language][3],
-                          font=('Arial',30),fg='#FFFFFF',bg='#096b1b',height=1,width=10)
-        cpuText.place(x = 1140,y=20)
         self.inputs.clear()
-        self.turnType = "Beginning"
-        self.turn = 0 ; self.humanScore = 0 ; self.cpuScore = 0
-        for i in range(13):
-            self.labels[i].bind("<Enter>",self.cardSelect)
-            self.labels[i].bind("<Leave>",self.cardDeselect)
-            self.labels[i].bind("<Button-1>",self.humanPlay)
+        self.biddingStage()
+
+    def passTurn(self):
+        self.bidTurn = self.bidTurn +1
+        if(self.bidder == 0):
+            self.bidder = 3
+            for i in range(len(self.inputs)) : self.inputs[i].destroy()
+            self.inputs.clear()
+            self.biddingStage()
+        else: 
+            msg = ""
+            if( self.language == 0) : msg = "Your mate has passed"
+            else : msg = "Eşiniz pas geçti"
+            messagebox.showinfo(title='Eşli Batak',message=msg)
+            self.bidder = 2
+            return "NoBid"
+        
+    def cpuBid(self,cpu):
+        if( cpu == 3) : self.bidder = 1
+        elif (cpu == 1) : self.bidder = 2
+        else : self.bidder = 0
+        self.bidTurn = self.bidTurn +1
+        suits = ["diamonds","spades","hearts","clubs"]
+        amounts = [0,0,0,0]
+        for i in range(4):
+            for j in range(cpu*13,(cpu+1)*13):
+                if( self.cards[j].type == suits[i]):
+                     amounts[i] = amounts[i] +1
+        takers = 0.0
+        trumpIndex = amounts.index(max(amounts))
+        for i in range(cpu*13,(cpu+1)*13):
+                value = self.cards[i].value
+                if(value == 14 or value == 13 or value == 12) : takers = takers + 1.0
+        print(takers)
+        if((max(amounts)-4) > 0) : takers = takers + (max(amounts)-4)
+        print((max(amounts)-4))
+        print(takers)
+        if( takers >= self.bid):
+            self.bid = self.bid +1
+            self.bidwinner = cpu
+            msg = ""
+            if( self.language == 0):
+                if( cpu == 3) : msg += "The computer in right bidded\nNew bid is: "
+                elif( cpu == 1) : msg += "Your mate bidded\nNew bid is: "
+                elif( cpu == 2) : msg += "The computer in left bidded\nNew bid is: "
+            else:
+                if( cpu == 3) : msg += "Sağdaki bilgisayar ihaleye girdi\nYeni ihale: "
+                elif( cpu == 1) : msg += "Eşiniz ihaleye girdi\nYeni ihale: "
+                elif( cpu == 2) : msg += "Soldaki bilgisayar ihaleye girdi\nYeni ihale: "
+            msg += str(self.biddingStage)
+            messagebox.showinfo(title='Eşli Batak',message=msg)
+            self.cpuTrump =  suits[trumpIndex]
+            self.biddingStage()
+        else:
+            msg = ""
+            if( self.language == 0) : msg = "Computer has passed"
+            else : msg = "Bilgisayar pas geçti"
+            messagebox.showinfo(title='Eşli Batak',message=msg)
+            self.biddingStage()
         
     def cardSelect(self,event): event.widget.place(x = event.widget.winfo_x(),y = event.widget.winfo_y() - 20)
 
@@ -414,3 +509,9 @@ class Batak:
                     self.labels.append(label)
                     if( i == 2) : label.place(x = 40, y= 89 + 40*j)
                     else : label.place(x = 1160, y= 89 + 40*j)
+    
+    def bidStarter(self):
+        if( self.starter == 0) : return 3
+        elif (self.starter == 3) : return 1
+        elif (self.starter == 1) : return 2
+        elif (self.starter == 2) : return 1
