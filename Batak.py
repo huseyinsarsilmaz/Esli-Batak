@@ -30,7 +30,7 @@ class Batak:
         self.cpuScore = None
         self.starter = starter
         self.bidder = starter
-        self.bidwinner = 0
+        self.bidwinner = starter
         self.bid = 7
         self.bidTurn = 0
         self.cpuTrump = ""
@@ -198,7 +198,7 @@ class Batak:
                 if( cpu == 3) : msg += "Sağdaki bilgisayar ihaleye girdi\nYeni ihale: "
                 elif( cpu == 1) : msg += "Eşiniz ihaleye girdi\nYeni ihale: "
                 elif( cpu == 2) : msg += "Soldaki bilgisayar ihaleye girdi\nYeni ihale: "
-            msg += str(self.biddingStage)
+            msg += str(self.bid)
             messagebox.showinfo(title='Eşli Batak',message=msg)
             self.cpuTrump =  suits[trumpIndex]
             self.biddingStage()
