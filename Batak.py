@@ -428,8 +428,6 @@ class Batak:
             self.cpuplay(self.winner+1,1)
 
     def gameOver(self):
-        if(self.humanScore >= self.bid) : messagebox.showinfo(title="Game over",message="You have WON !")
-        else: messagebox.showerror(title="Game over",message="You have LOST !")
         self.window.destroy()
         
     def bind(self,label,i,marked):
@@ -510,8 +508,22 @@ class Batak:
                     if( i == 2) : label.place(x = 40, y= 89 + 40*j)
                     else : label.place(x = 1160, y= 89 + 40*j)
     
-    def bidStarter(self):
+    def getStarter(self):
         if( self.starter == 0) : return 3
         elif (self.starter == 3) : return 1
         elif (self.starter == 1) : return 2
         elif (self.starter == 2) : return 1
+    
+    def getScores(self):
+        rtr = []
+        if(self.bidwinner == 0 or self.bidwinner == 1):
+            if(self.humanScore >= self.bid) : rtr.append(self.humanScore)
+            else : rtr.append(-self.bid)
+            if(self.cpuScore >= 2) : rtr.append(self.cpuScore)
+            else : rtr.append(-self.bid)
+        else:
+            if(self.humanScore >= 2) : rtr.append(self.humanScore)
+            else : rtr.append(-self.bid)
+            if(self.cpuScore >= self.bid) : rtr.append(self.cpuScore)
+            else : rtr.append(-self.bid)
+        return rtr
