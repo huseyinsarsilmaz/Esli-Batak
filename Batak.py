@@ -31,7 +31,7 @@ class Batak:
         self.starter = starter
         self.bidder = starter
         self.bidwinner = starter
-        self.bid = 7
+        self.bid = 6
         self.bidTurn = 0
         self.cpuTrump = ""
         self.activeCards = []    
@@ -115,20 +115,31 @@ class Batak:
                     self.labels[i].bind("<Enter>",self.cardSelect)
                     self.labels[i].bind("<Leave>",self.cardDeselect)
                     self.labels[i].bind("<Button-1>",self.humanPlay)
-            elif( self.bidwinner == 1):
-                for i in range(13,26):
-                    self.labels[i].bind("<Enter>",self.cardSelect)
-                    self.labels[i].bind("<Leave>",self.cardDeselect)
-                    self.labels[i].bind("<Button-1>",self.humanPlay)
-            elif( self.bidwinner == 2): 
+            else:
                 self.trump = self.cpuTrump
-                self.cpuplay(3,0)
-            else: 
-                self.trump = self.cpuTrump
-                self.cpuplay(4,1)
-
+                print(self.trump)
+                types = ["spades","clubs","diamonds","hearts"]
+                if ( self.language == 0) : msg = "Trump: "
+                else: msg = "Koz:  "
+                trumpText = Label(self.window,text=msg,font=('Arial',45),fg='#FFFFFF',bg='#096b1b',)
+                trumpImage = Label(self.window,image=self.images[types.index(self.trump)])
+                trumpText.place(x = 562 , y= 342)
+                trumpImage.place(x = 800 , y=352)
+                self.window.update()
+                time.sleep(3)
+                trumpText.destroy()
+                trumpImage.destroy()
+                self.window.update()
+                if( self.bidwinner == 1):
+                    for i in range(13,26):
+                        self.labels[i].bind("<Enter>",self.cardSelect)
+                        self.labels[i].bind("<Leave>",self.cardDeselect)
+                        self.labels[i].bind("<Button-1>",self.humanPlay)
+                elif( self.bidwinner == 2) : self.cpuplay(3,0)  
+                else : self.cpuplay(4,1)                    
+    
     def Settings(self,isFirst):
-        self.inputs.append(Scale(self.window,from_=self.bid,to=13,length=220,font = ('Consolas',20),troughcolor = '#000000',
+        self.inputs.append(Scale(self.window,from_=self.bid+1,to=13,length=220,font = ('Consolas',20),troughcolor = '#000000',
                            fg = '#FFFFFF', bg = '#096b1b',borderwidth=0,highlightthickness=0))
         self.inputs.append(Label(self.window,text=self.texts[self.language][0],font=('Arial',45),fg='#FFFFFF',bg='#096b1b',))
         self.inputs.append(Label(self.window,text=self.texts[self.language][1],font=('Arial',45),fg='#FFFFFF',bg='#096b1b',))
@@ -183,11 +194,8 @@ class Batak:
         for i in range(cpu*13,(cpu+1)*13):
                 value = self.cards[i].value
                 if(value == 14 or value == 13 or value == 12) : takers = takers + 1.0
-        print(takers)
         if((max(amounts)-4) > 0) : takers = takers + (max(amounts)-4)
-        print((max(amounts)-4))
-        print(takers)
-        if( takers >= self.bid):
+        if( takers >= self.bid or self.bid == 6):
             self.bid = self.bid +1
             self.bidwinner = cpu
             msg = ""
@@ -314,7 +322,6 @@ class Batak:
         else : xpos = xpos + 35 ; ypos = ypos + (35 * int(score/5))
         scoreLogo = Label(self.window,image=self.score,borderwidth=0,highlightthickness=0)
         scoreLogo.place( x = xpos , y = ypos)
-        print(str(xpos) + " " + str(ypos))
 
     def cardAnimation(self,label,index,player,isHuman):
         animate = Label(self.window, image= self.cards[index].img,borderwidth=0,highlightthickness=0)
