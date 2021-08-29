@@ -520,7 +520,7 @@ class Batak:
         if( self.starter == 0) : return 3
         elif (self.starter == 3) : return 1
         elif (self.starter == 1) : return 2
-        elif (self.starter == 2) : return 1
+        elif (self.starter == 2) : return 0
     
     def getScores(self):
         rtr = []
