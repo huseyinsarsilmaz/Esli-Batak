@@ -90,7 +90,7 @@ class Batak:
         self.cards = newCards
     
     def biddingStage(self):
-        if ( self.bidTurn != 4):
+        if ( self.bidTurn < 4):
             if( self.bidder == 0):
                 first = FALSE
                 if( self.bidder == self.starter) : first = TRUE
@@ -99,7 +99,7 @@ class Batak:
                 if( self.mateRule == TRUE) : self.cpuBid(self.bidder)
                 else: self.passTurn()
             else : self.cpuBid(self.bidder)
-        else:
+        elif(self.bidTurn == 4):
             for i in range(13,26) : self.labels[i].config(image=self.cards[i].img)
             humanText = Label(self.window,text= self.texts[self.language][2],
                               font=('Arial',30),fg='#FFFFFF',bg='#096b1b',height=1,width=8)
@@ -109,6 +109,7 @@ class Batak:
             cpuText.place(x = 1140,y=20)
             self.turnType = "Beginning"
             self.turn = 0 ; self.humanScore = 0 ; self.cpuScore = 0
+            self.bidTurn = 99
             if( self.bidwinner == 0):
                 for i in range(13):
                     self.labels[i].bind("<Enter>",self.cardSelect)

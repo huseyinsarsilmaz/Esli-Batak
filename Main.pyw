@@ -92,7 +92,7 @@ def main():
         scores.mainloop()
         if(nextGame == TRUE):
             batak = Batak(language,mateRule,starter)
-            starter = batak.bidStarter()
+            starter = batak.getStarter()
         else : break
 
 
