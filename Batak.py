@@ -1,11 +1,22 @@
 from tkinter import *
 from tkinter import messagebox
-from Card import *
 import time
 import random
 
-class Batak:
+class Card:
+    value = None
+    type = None
+    img = None
+    unplayable = None
 
+    def __init__(self,value,type,path):
+        self.value = value
+        self.type = type
+        self.img = PhotoImage(file=path)
+        upath = "img/unplayable/" + path[4:] + ".png"
+        self.unplayable = PhotoImage(file=upath)
+
+class Batak:
     def __init__(self,language,mateRule,starter):
         self.window = Tk()
         self.mateRule = mateRule 
