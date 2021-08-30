@@ -4,7 +4,7 @@ window = Tk()
 scores = None
 language = None
 mateRule = FALSE
-nextGame = FALSE
+nextGame = TRUE
 starter = 0
 
 def main():
@@ -30,13 +30,16 @@ def main():
     textTurkish.place( x=175,y=200)
     textEnglish .place( x=470,y=200)
     window.mainloop()
-    batak = Batak(language,mateRule,starter)
-    starter = batak.getStarter()
     humanScores = []
     cpuScores = []
     while(TRUE):
-        humanScores.append(batak.getScores()[0])
-        cpuScores.append(batak.getScores()[1])
+        if(nextGame == TRUE):
+            batak = Batak(language,mateRule,starter)
+            starter = batak.getStarter()
+        else : break
+        if(batak.closed == FALSE):
+            humanScores.append(batak.getScores()[0])
+            cpuScores.append(batak.getScores()[1])
         if( language == 0): 
             title = "Scores"
             playertxt = "Player"
@@ -90,11 +93,6 @@ def main():
                         bg= "#429bf5",borderwidth=0,highlightthickness=0)
         quitButton.grid(row = len(humanScores) + 3,column = 1)
         scores.mainloop()
-        if(nextGame == TRUE):
-            batak = Batak(language,mateRule,starter)
-            starter = batak.getStarter()
-        else : break
-
 
 def fMateRule():
     global mateRule

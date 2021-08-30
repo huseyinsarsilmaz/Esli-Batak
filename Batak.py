@@ -36,6 +36,7 @@ class Batak:
         self.cpuTrump = ""
         self.activeCards = []    
         self.language = language
+        self.closed = FALSE
         self.texts = [ ["Your bid ?","Trump ?","Player","Computer"] , ["  İhale ?","  Koz ?","Oyuncu","Bilgisayar"]]
         self.loadImages()
         self.createWindow()
@@ -53,12 +54,17 @@ class Batak:
                 PhotoImage(file = "img/Heart.png")]
         for i in range(4) : self.images.append(Suits[i])
 
+    def onClose(self):
+        self.closed = TRUE
+        self.window.destroy()
+    
     def createWindow(self):
         self.window.geometry("1400x800")
         self.window.title("Eşli Batak")
         self.window.iconphoto(True,PhotoImage(file="img/Logo.png"))
         self.window.config(background="#096b1b")
         self.window.resizable(height=False,width=False)
+        self.window.protocol("WM_DELETE_WINDOW", self.onClose)
 
     def createCards(self):
         types = ["clubs","diamonds","spades","hearts"]
