@@ -1,4 +1,4 @@
-from Game import *
+from src.Game import *
 
 class StartingScreen:
     def __init__(self):

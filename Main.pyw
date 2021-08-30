@@ -1,4 +1,5 @@
-from StartingScreen import *
+
+from src.StartingScreen import *
 
 def main():
     start = StartingScreen()
