@@ -111,11 +111,11 @@ class Game:
             if( self.bidder == 0):
                 first = FALSE
                 if( self.bidder == self.starter) : first = TRUE
-                self.Settings(first)
+                self.Settings(first) ; return
             elif( self.bidder == 1):
-                if( self.mateRule == TRUE) : self.cpuBid(self.bidder)
-                else: self.passTurn()
-            else : self.cpuBid(self.bidder)
+                if( self.mateRule == TRUE) : self.cpuBid(self.bidder) ; return
+                else: self.passTurn() ; return
+            else : self.cpuBid(self.bidder) ; return
         elif(self.bidTurn == 4):
             for i in range(13,26) : self.labels[i].config(image=self.cards[i].img)
             humanText = Label(self.window,text= self.texts[self.language][2],
@@ -142,7 +142,7 @@ class Game:
                 trumpText.place(x = 562 , y= 342)
                 trumpImage.place(x = 800 , y=352)
                 self.window.update()
-                time.sleep(3)
+                time.sleep(2.5)
                 trumpText.destroy()
                 trumpImage.destroy()
                 self.window.update()
@@ -450,8 +450,7 @@ class Game:
             for i in range( (1)*13,(1+1)*13) : self.activeCards[i] = FALSE
             self.cpuplay(self.winner+1,1)
 
-    def gameOver(self):
-        self.window.destroy()
+    def gameOver(self) : self.window.destroy()
         
     def bind(self,label,i,marked):
         label.bind("<Enter>",self.cardSelect)

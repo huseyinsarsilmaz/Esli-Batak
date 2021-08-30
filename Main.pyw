@@ -1,4 +1,3 @@
-
 from src.StartingScreen import *
 
 def main():
