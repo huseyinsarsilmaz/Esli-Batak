@@ -1,4 +1,4 @@
-from Batak import *
+from Game import *
 
 class StartingScreen:
     def __init__(self):
@@ -31,10 +31,10 @@ class StartingScreen:
         cpuScores = []
         while(TRUE):
             if(self.nextGame == TRUE):
-                batak = Batak(self.language,self.mateRule,self.starter)
+                game = Game(self.language,self.mateRule,self.starter)
                 self.starter = batak.getStarter()
             else : break
-            if(batak.closed == FALSE):
+            if(game.closed == FALSE):
                 humanScores.append(batak.getScores()[0])
                 cpuScores.append(batak.getScores()[1])
             if( self.language == 0): 

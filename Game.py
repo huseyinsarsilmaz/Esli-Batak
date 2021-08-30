@@ -16,7 +16,7 @@ class Card:
         upath = "img/unplayable/" + path[4:] + ".png"
         self.unplayable = PhotoImage(file=upath)
 
-class Batak:
+class Game:
     def __init__(self,language,mateRule,starter):
         self.window = Tk()
         self.mateRule = mateRule 
