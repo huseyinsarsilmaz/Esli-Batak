@@ -169,14 +169,13 @@ class Batak:
             self.bidder = 3
             for i in range(len(self.inputs)) : self.inputs[i].destroy()
             self.inputs.clear()
-            self.biddingStage()
         else: 
+            self.bidder = 2
             msg = ""
             if( self.language == 0) : msg = "Your mate has passed"
             else : msg = "Eşiniz pas geçti"
             messagebox.showinfo(title='Eşli Batak',message=msg)
-            self.bidder = 2
-            return "NoBid"
+        self.biddingStage()
         
     def cpuBid(self,cpu):
         if( cpu == 3) : self.bidder = 1
