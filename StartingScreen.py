@@ -32,11 +32,11 @@ class StartingScreen:
         while(TRUE):
             if(self.nextGame == TRUE):
                 game = Game(self.language,self.mateRule,self.starter)
-                self.starter = batak.getStarter()
+                self.starter = game.getStarter()
             else : break
             if(game.closed == FALSE):
-                humanScores.append(batak.getScores()[0])
-                cpuScores.append(batak.getScores()[1])
+                humanScores.append(game.getScores()[0])
+                cpuScores.append(game.getScores()[1])
             if( self.language == 0): 
                 title = "Scores"
                 playertxt = "Player"

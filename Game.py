@@ -134,7 +134,6 @@ class Game:
                     self.labels[i].bind("<Button-1>",self.humanPlay)
             else:
                 self.trump = self.cpuTrump
-                print(self.trump)
                 types = ["spades","clubs","diamonds","hearts"]
                 if ( self.language == 0) : msg = "Trump: "
                 else: msg = "Koz:  "
